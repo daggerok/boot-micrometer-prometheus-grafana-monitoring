@@ -1,0 +1,13 @@
+INSERT INTO my_users (name)
+VALUES ('Andy Shi')
+     , ('Stephane Maldini')
+     , ('Ryland Degnan')
+     , ('Mark Heckler')
+     , ('Jonathan Bregler')
+     , ('Phil Clay')
+     , ('Spencer Gibb')
+     , ('Cora Iberkleid')
+     , ('Anil Gursel')
+     , ('Rick Hogge')
+     , ('Erdem Gunay')
+;

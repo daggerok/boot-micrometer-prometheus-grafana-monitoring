@@ -1,0 +1,68 @@
+name: CI
+on: [push]
+env:
+  SPRING_PROFILES_ACTIVE: ci
+jobs:
+  mvnw:
+    strategy:
+      matrix:
+        java: [11]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    name: java-${{ matrix.java }} just build with mvnw maven wrapper
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/mvnw') }}
+        restore-keys: |
+          ${{ runner.os }}-docker-
+          ${{ runner.os }}-maven-
+          ${{ runner.os }}-
+    - uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.java }}
+    - run: command -v docker >/dev/null 2>&1 || { echo >&2 "I require docker but it's not installed.  Aborting."; exit 1; }
+    - run: cd $GITHUB_WORKSPACE && ./mvnw -f docker-compose -P postgres-start
+    - run: cd $GITHUB_WORKSPACE && ./mvnw
+  postgres-backend:
+    strategy:
+      matrix:
+        java: [11]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    name: java-${{ matrix.java }} step-0-getting-started
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/mvnw') }}
+        restore-keys: |
+          ${{ runner.os }}-docker-
+          ${{ runner.os }}-maven-
+          ${{ runner.os }}-
+    - uses: actions/cache@v1
+      with:
+        path: ~/.docker
+        key: ${{ runner.os }}-docker-${{ hashFiles('**/mvnw') }}
+        restore-keys: |
+          ${{ runner.os }}-docker-
+          ${{ runner.os }}-maven-
+          ${{ runner.os }}-
+    - uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.java }}
+    - run: command -v docker >/dev/null 2>&1 || { echo >&2 "I require docker but it's not installed.  Aborting."; exit 1; }
+    - run: sudo apt-get install -y httpie curl jq
+    - run: cd $GITHUB_WORKSPACE && ./mvnw -f docker-compose -P postgres-start
+    - run: cd $GITHUB_WORKSPACE && ./mvnw -f backend package jib:dockerBuild
+    - run: cd $GITHUB_WORKSPACE && ./mvnw -f docker-compose -P backend-start
+    - run: while [[ ! 200 -eq `curl -s -o /dev/null -w "%{http_code}" 0:8080/actuator/health` ]] ; do sleep 1s ; echo -n '.' ; done
+    - run: http get :8080 | jq '.'
+    - run: http --ignore-stdin post :8080 name=ololo
+    - run: http --ignore-stdin post :8080 name=trololo
+    - run: curl -sS 0:8080 | jq '.'
+    - run: http --ignore-stdin post :8080/actuator/shutdown
+    - run: cd $GITHUB_WORKSPACE && ./mvnw -f docker-compose -Pdown
