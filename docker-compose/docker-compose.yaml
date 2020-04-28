@@ -30,19 +30,30 @@ services:
       postgres:
         condition: service_healthy
     networks: [backend-network]
-  frontend:
-    image: daggerok/boot-micrometer-prometheus-grafana-monitoring-frontend:latest
-    ports: ['8080:8080']
-    environment:
-      POSTGRES_PORT: 5432
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      SPRING_PROFILES_INCLUDE: ci
-    depends_on:
-      backend:
-        condition: service_started
-    networks:
-    - backend-network
-    - frontend-network
+#  frontend:
+#    image: daggerok/boot-micrometer-prometheus-grafana-monitoring-frontend:latest
+#    ports: ['8080:8080']
+#    environment:
+#      POSTGRES_PORT: 5432
+#      POSTGRES_HOST: postgres
+#      POSTGRES_DB: postgres
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      SPRING_PROFILES_INCLUDE: ci
+#    depends_on:
+#      backend:
+#        condition: service_started
+#    networks:
+#    - backend-network
+#    - frontend-network
+  prometheus:
+    image: prom/prometheus:v2.17.2
+    depends_on: [backend]
+    ports: ['9090:9090']
+    volumes: ['./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro']
+    networks: [backend-network]
+  grafana:
+    image: grafana/grafana:6.7.3
+    depends_on: [prometheus]
+    ports: ['3000:3000']
+    networks: [backend-network]

@@ -16,6 +16,20 @@
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
+    <!--<dependency>
+      <groupId>org.springframework.metrics</groupId>
+      <artifactId>spring-metrics</artifactId>
+      <version>${spring-metrics.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>simpleclient_common</artifactId>
+      <version>${prometheus.version}</version>
+    </dependency>-->
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-r2dbc</artifactId>
     </dependency>
