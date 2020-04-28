@@ -3,22 +3,22 @@ on: [push]
 env:
   SPRING_PROFILES_ACTIVE: ci
 jobs:
-  mvnw:
+  build:
     strategy:
       matrix:
         java: [11]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    name: java-${{ matrix.java }} just build with mvnw maven wrapper
+    name: build with java-${{ matrix.java }}
     steps:
     - uses: actions/checkout@v1
     - uses: actions/cache@v1
       with:
         path: ~/.m2
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/mvnw') }}
+        key: ${{ runner.os }}-java-${{ hashFiles('**/mvnw') }}
         restore-keys: |
           ${{ runner.os }}-docker-
-          ${{ runner.os }}-maven-
+          ${{ runner.os }}-java-
           ${{ runner.os }}-
     - uses: actions/setup-java@v1
       with:
@@ -26,22 +26,22 @@ jobs:
     - run: command -v docker >/dev/null 2>&1 || { echo >&2 "I require docker but it's not installed.  Aborting."; exit 1; }
     - run: cd $GITHUB_WORKSPACE && ./mvnw -f docker-compose -P postgres-start
     - run: cd $GITHUB_WORKSPACE && ./mvnw
-  postgres-backend:
+  test:
     strategy:
       matrix:
         java: [11]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    name: java-${{ matrix.java }} step-0-getting-started
+    name: test with java-${{ matrix.java }}
     steps:
     - uses: actions/checkout@v1
     - uses: actions/cache@v1
       with:
         path: ~/.m2
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/mvnw') }}
+        key: ${{ runner.os }}-java-${{ hashFiles('**/mvnw') }}
         restore-keys: |
           ${{ runner.os }}-docker-
-          ${{ runner.os }}-maven-
+          ${{ runner.os }}-java-
           ${{ runner.os }}-
     - uses: actions/cache@v1
       with:
@@ -49,7 +49,7 @@ jobs:
         key: ${{ runner.os }}-docker-${{ hashFiles('**/mvnw') }}
         restore-keys: |
           ${{ runner.os }}-docker-
-          ${{ runner.os }}-maven-
+          ${{ runner.os }}-java-
           ${{ runner.os }}-
     - uses: actions/setup-java@v1
       with:
