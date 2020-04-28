@@ -46,6 +46,7 @@ http :8080
 ## resources
 
 * [YouTube: Kubernetes Master Class: Monitoring and Alerting with Prometheus & Grafana](https://www.youtube.com/watch?v=OQojdJL48S4&feature=youtu.be&t=1750)
+* https://dzone.com/articles/monitoring-using-spring-boot-20-prometheus-and-gra
 * [Docker Hub Prometheus](https://hub.docker.com/r/prom/prometheus/)
 * [Spring Boot Actuator Metrics](https://docs.spring.io/spring-metrics/docs/current/public/prometheus)
 * [R2DBC migrations (require java >= 11 and spring-boot >= 2.3.0.M3)](https://github.com/nkonev/r2dbc-migrate)
