@@ -58,11 +58,13 @@ jobs:
     - run: sudo apt-get install -y httpie curl jq
     - run: cd $GITHUB_WORKSPACE && ./mvnw -f docker-compose -P postgres-start
     - run: cd $GITHUB_WORKSPACE && ./mvnw -f backend package jib:dockerBuild
-    - run: cd $GITHUB_WORKSPACE && ./mvnw -f docker-compose -P backend-start
+    #- run: cd $GITHUB_WORKSPACE && ./mvnw -f docker-compose -P backend-start,prometheus-start,grafana-start
+    - run: cd $GITHUB_WORKSPACE && ./mvnw -f docker-compose -P grafana-start
     - run: while [[ ! 200 -eq `curl -s -o /dev/null -w "%{http_code}" 0:8080/actuator/health` ]] ; do sleep 1s ; echo -n '.' ; done
     - run: http get :8080 | jq '.'
     - run: http --ignore-stdin post :8080 name=ololo
     - run: http --ignore-stdin post :8080 name=trololo
     - run: curl -sS 0:8080 | jq '.'
+    - run: http --ignore-stdin post :8080/actuator/prometheus
     - run: http --ignore-stdin post :8080/actuator/shutdown
     - run: cd $GITHUB_WORKSPACE && ./mvnw -f docker-compose -Pdown
